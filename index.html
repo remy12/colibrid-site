@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Reefly</title>
+<meta name="description" content="Reefly: dive sites, certified dive centres and your logbook in one free app.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Figtree:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one continuous descent — surface hero, then the page sinks through depth bands; a dive-computer readout carries the numbers */
+:root{
+  --surface:#0d5c7a;   /* light water near the surface */
+  --mid:#0a3b55;       /* mid water */
+  --deep:#06192b;      /* deep water, page ground */
+  --ink:#e8f4f8;       /* text on water */
+  --mute:#9fc2d1;      /* secondary text */
+  --tank:#f5c842;      /* the one accent: tank / surface-marker yellow */
+  --line:#ffffff1f;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Figtree","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--deep);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--tank);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* hero: surface water with moving light */
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--surface) 0%,var(--mid) 62%,var(--deep) 100%)}
+#caustics{position:absolute;inset:0;width:100%;height:100%;opacity:.55;mix-blend-mode:screen;pointer-events:none}
+.hero .wrap{position:relative;padding-block:28px 72px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:.02em;text-decoration:none}
+.brand svg{width:40px;height:40px}
+.top a.open{font-weight:700;font-size:15px;text-decoration:none;border:1px solid #ffffff55;border-radius:999px;padding:8px 16px}
+.top a.open:hover{background:#ffffff14}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:48px;align-items:end;margin-top:72px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(64px,11vw,148px);line-height:.86;letter-spacing:-.01em;margin:0;text-transform:uppercase;text-wrap:balance}
+h1 span{color:var(--tank)}
+.lead{font-size:clamp(18px,2.1vw,22px);max-width:34ch;margin:22px 0 30px;color:var(--ink)}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:16px;text-decoration:none;border-radius:999px;padding:13px 22px}
+.btn.main{background:var(--tank);color:var(--deep)}
+.btn.main:hover{filter:brightness(1.07)}
+.btn.ghost{border:1px solid #ffffff55}
+.btn.ghost:hover{background:#ffffff14}
+
+/* dive computer readout */
+.computer{font-family:var(--mono);background:#041320d9;border:1px solid #ffffff2b;border-radius:22px;padding:18px 20px;box-shadow:0 20px 50px #0007;backdrop-filter:blur(6px)}
+.computer .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.computer .row:last-child{border-bottom:0}
+.computer small{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.computer b{font-weight:500;font-size:26px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.computer b i{font-style:normal;font-size:13px;color:var(--mute);margin-left:4px}
+.computer .status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tank);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.computer .status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--tank);box-shadow:0 0 10px var(--tank)}
+
+/* descent bands */
+.band{position:relative;padding-block:72px}
+.band .wrap{display:grid;grid-template-columns:120px minmax(0,1fr);gap:32px}
+.depth{font-family:var(--mono);font-size:13px;color:var(--mute);letter-spacing:.08em;border-top:1px solid var(--line);padding-top:10px;height:max-content;position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px)}
+.depth strong{display:block;font-family:var(--display);font-size:44px;line-height:1;color:var(--ink);letter-spacing:0}
+h2{font-family:var(--display);font-weight:800;font-size:clamp(40px,6vw,72px);line-height:.95;margin:0 0 18px;text-transform:uppercase;text-wrap:balance}
+.band p.intro{max-width:60ch;color:var(--mute);margin:0 0 34px}
+.features{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.f{background:var(--deep);padding:26px 26px 28px;min-width:0}
+.f h3{font-family:var(--display);font-weight:600;font-size:28px;letter-spacing:.02em;margin:0 0 8px;text-transform:uppercase}
+.f p{margin:0;color:var(--mute);font-size:16px}
+.f ul{margin:12px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+.f li{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--ink)}
+.band.b1{background:linear-gradient(180deg,var(--deep),#071f33)}
+.band.b2{background:#071f33}
+.trust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+.trust div{border-top:2px solid var(--tank);padding-top:14px;min-width:0}
+.trust h3{font-family:var(--display);font-weight:600;font-size:24px;margin:0 0 6px;text-transform:uppercase;letter-spacing:.02em}
+.trust p{margin:0;color:var(--mute);font-size:16px}
+.agencies{font-family:var(--mono);font-size:13px;color:var(--ink);margin-top:30px;line-height:2}
+.agencies span{color:var(--mute)}
+
+footer{border-top:1px solid var(--line);background:var(--deep)}
+footer .wrap{padding-block:34px 44px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;font-size:14px;color:var(--mute)}
+footer b{color:var(--ink)}
+.mail{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);color:var(--ink)}
+.mail button{font:inherit;font-size:12px;color:var(--deep);background:var(--tank);border:0;border-radius:999px;padding:3px 10px;cursor:pointer}
+.soon{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--tank)}
+
+@media (max-width:860px){
+  .hero-grid{grid-template-columns:1fr;gap:36px;margin-top:48px}
+  .band .wrap{grid-template-columns:1fr;gap:18px}
+  .depth{position:static;display:flex;align-items:baseline;gap:12px}
+  .depth strong{font-size:32px}
+  .features{grid-template-columns:1fr}
+  .trust{grid-template-columns:1fr;gap:22px}
+}
+@media (prefers-reduced-motion:reduce){#caustics{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <canvas id="caustics" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="top">
+      <a class="brand" href="#top" aria-label="Reefly">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="14" width="38" height="20" rx="10" fill="none" stroke="#e8f4f8" stroke-width="3"/><path d="M24 14v20" stroke="#e8f4f8" stroke-width="3"/><circle cx="15" cy="24" r="4" fill="#f5c842"/><circle cx="33" cy="24" r="4" fill="#f5c842"/><path d="M40 8c2 3 2 6 0 9" stroke="#f5c842" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+        Reefly
+      </a>
+      <a class="open" href="https://app.colibrid.net">Open the app</a>
+    </div>
+    <div class="hero-grid">
+      <div>
+        <h1 id="top">Into the<br><span>blue.</span></h1>
+        <p class="lead">Find your next dive site, pick a certified dive centre and keep every dive in one free app.</p>
+        <div class="cta">
+          <a class="btn main" href="https://app.colibrid.net">Open Reefly →</a>
+          <a class="btn ghost" href="#inside">What's inside</a>
+        </div>
+      </div>
+      <div class="computer" aria-label="Reefly in numbers">
+        <div class="status">Catalogue live</div>
+        <div class="row"><small>Dive sites</small><b>17,000<i>+</i></b></div>
+        <div class="row"><small>Certified centres</small><b>~5,000</b></div>
+        <div class="row"><small>World regions</small><b>10</b></div>
+        <div class="row"><small>Languages</small><b>6</b></div>
+        <div class="row"><small>Price</small><b>0<i>CHF</i></b></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="band b1" id="inside">
+    <div class="wrap">
+      <div class="depth">Depth<strong>5 m</strong></div>
+      <div>
+        <h2>Everything for the dive, before and after</h2>
+        <p class="intro">Reefly is built by a diver for divers. Plan where to go, choose who to dive with, then log what you saw.</p>
+        <div class="features">
+          <div class="f"><h3>Explore</h3><p>Dive sites on a world map, by region, country and island, with the usual season and the best months for each one.</p><ul><li>Sea · lake · cenote</li><li>Scuba · freediving</li><li>Wrecks</li></ul></div>
+          <div class="f"><h3>Dive centres</h3><p>Only centres certified by an official training agency are shown, with their prices and offers when they publish them.</p><ul><li>Price per dive</li><li>Nitrox</li><li>Kids' courses</li></ul></div>
+          <div class="f"><h3>Logbook &amp; Passport</h3><p>Log each dive with depth, time and the marine life you met, and fill your diving passport species by species.</p><ul><li>Depth &amp; time</li><li>Marine life</li><li>Photos</li></ul></div>
+          <div class="f"><h3>Plans &amp; Community</h3><p>Put a trip together, share a dive with other divers and find your buddies by their Reefly number.</p><ul><li>Trip plans</li><li>Shared dives</li><li>RF- numbers</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band b2">
+    <div class="wrap">
+      <div class="depth">Depth<strong>18 m</strong></div>
+      <div>
+        <h2>Information you can trust</h2>
+        <div class="trust">
+          <div><h3>Certified only</h3><p>A dive centre appears to divers only once an official agency is found on its own website.</p></div>
+          <div><h3>Open sources</h3><p>Sites come from open data and are checked against their GPS position, never copied from map apps.</p></div>
+          <div><h3>Yours to keep</h3><p>Your logbook stays yours. Reefly runs on its own server in Switzerland.</p></div>
+        </div>
+        <p class="agencies">PADI · SSI · CMAS · NAUI · SDI · TDI · RAID · BSAC · GUE · IANTD · FFESSM · VDST · AIDA · Molchanovs <span>and other official agencies</span></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b>Reefly</b> by COLIBRID SA · Gland, Switzerland<br><span class="soon">The full website is on its way.</span></div>
+    <div>Contact: <span class="mail"><span id="addr">remy@colibrid.net</span><button type="button" id="copy">Copy</button></span></div>
+  </div>
+</footer>
+
+<script>
+(()=>{const b=document.getElementById('copy'),a=document.getElementById('addr');
+ b.addEventListener('click',()=>{const done=()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1600)};
+  const sel=()=>{const r=document.createRange();r.selectNodeContents(a);const s=getSelection();s.removeAllRanges();s.addRange(r)};
+  try{navigator.clipboard.writeText(a.textContent).then(done,sel)}catch(_){sel()}})})();
+// light rippling through the surface water
+(()=>{const c=document.getElementById('caustics');if(!c||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const x=c.getContext('2d');const W=160,H=90;c.width=W;c.height=H;const img=x.createImageData(W,H);let t=0;
+ function frame(){t+=0.018;const d=img.data;
+  for(let j=0;j<H;j++)for(let i=0;i<W;i++){const u=i/W*6,v=j/H*4;
+   let s=Math.sin(u*1.7+t)+Math.sin(v*2.3-t*1.3)+Math.sin((u+v)*1.3+t*.7)+Math.sin(Math.hypot(u-3,v-2)*2.1-t*1.6);
+   s=Math.pow(Math.max(0,1-Math.abs(s)/1.2),3)*(1-j/H*0.85);const k=(j*W+i)*4;
+   d[k]=150*s;d[k+1]=230*s;d[k+2]=255*s;d[k+3]=255*s}
+  x.putImageData(img,0,0);requestAnimationFrame(frame)}
+ frame()})();
+</script>
+</body>
+</html>
